@@ -14,6 +14,6 @@ namespace LexiconIMDB.Data
         {
         }
 
-        public DbSet<LexiconIMDB.Models.Entities.Movie> Movie { get; set; } = default!;
+        public DbSet<Movie> Movie => Set<Movie>();
     }
 }
