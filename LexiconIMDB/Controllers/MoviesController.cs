@@ -9,16 +9,19 @@ using LexiconIMDB.Data;
 using LexiconIMDB.Models.Entities;
 using LexiconIMDB.Models.ViewModels;
 using System.Linq.Expressions;
+using LexiconIMDB.Services;
 
 namespace LexiconIMDB.Controllers
 {
     public class MoviesController : Controller
     {
         private readonly LexiconIMDBContext _context;
+        private readonly IGenreSelectListService selectListService;
 
-        public MoviesController(LexiconIMDBContext context)
+        public MoviesController(LexiconIMDBContext context, IGenreSelectListService selectListService)
         {
             _context = context;
+            this.selectListService = selectListService;
         }
 
         [HttpGet]
@@ -57,23 +60,43 @@ namespace LexiconIMDB.Controllers
             var model = new IndexViewModel
             {
                 Movies = await movies.ToListAsync(),
-                Genres = await GetGenresAsync()
+                Genres = await selectListService.GetGenresAsync()
             };
 
             return View(nameof(Index2), model);
+        }  
+        
+        [HttpGet]
+        public async Task<IActionResult> Filter3(IndexViewModel2 viewModel)
+        {
+            var movies = string.IsNullOrWhiteSpace(viewModel.Title) ?
+                                                _context.Movie :
+                                                _context.Movie.Where(m => m.Title.StartsWith(viewModel.Title));
+
+            movies = viewModel.Genre is null ?
+                               movies :
+                               movies.Where(m => m.Genre == viewModel.Genre);
+
+
+            var model = new IndexViewModel2
+            {
+                Movies = await movies.ToListAsync(),
+            };
+
+            return View(nameof(Index3), model);
         }
 
-        private async Task<IEnumerable<SelectListItem>> GetGenresAsync()
-        {
-            return await _context.Movie.Select(m => m.Genre)
-                               .Distinct()
-                               .Select(g => new SelectListItem
-                               {
-                                   Text = g.ToString(),
-                                   Value = g.ToString()
-                               })
-                               .ToListAsync();
-        }
+        //private async Task<IEnumerable<SelectListItem>> GetGenresAsync()
+        //{
+        //    return await _context.Movie.Select(m => m.Genre)
+        //                       .Distinct()
+        //                       .Select(g => new SelectListItem
+        //                       {
+        //                           Text = g.ToString(),
+        //                           Value = g.ToString()
+        //                       })
+        //                       .ToListAsync();
+        //}
 
 
         [HttpGet]
@@ -94,6 +117,20 @@ namespace LexiconIMDB.Controllers
                                .ToList()
             };
 
+
+            return View(model);
+        }   
+        
+        
+        [HttpGet]
+        public async Task<IActionResult> Index3()
+        {
+            var movies = await _context.Movie.ToListAsync();
+
+            var model = new IndexViewModel2
+            {
+                Movies = movies,
+            };
 
             return View(model);
         } 

@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using LexiconIMDB.Data;
+using LexiconIMDB.Services;
+
 namespace LexiconIMDB
 {
     public class Program
@@ -14,6 +16,13 @@ namespace LexiconIMDB
 
             builder.Services.AddDbContext<LexiconIMDBContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("LexiconIMDBContext") ?? throw new InvalidOperationException("Connection string 'LexiconIMDBContext' not found.")));
+
+
+            builder.Services.AddScoped<IGenreSelectListService, GenreSelectListService>();
+
+            //builder.Services.AddSingleton      Samma instans för hela applikationes livslängs
+            //builder.Services.AddScoped         Samma instans för hela requestet
+            //builder.Services.AddTransient      ny instans så fort någon behöver servicen
 
             var app = builder.Build();
 
