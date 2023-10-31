@@ -22,10 +22,10 @@ namespace LexiconIMDB.Controllers
         // GET: Movies
         public async Task<IActionResult> Index()
         {
-              return _context.Movie != null ? 
-                          View(await _context.Movie.ToListAsync()) :
-                          Problem("Entity set 'LexiconIMDBContext.Movie'  is null.");
+            return View(await _context.Movie.ToListAsync());
         }
+
+
 
         // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -35,8 +35,9 @@ namespace LexiconIMDB.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.Movie
+            var movie = await  _context.Movie
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (movie == null)
             {
                 return NotFound();
