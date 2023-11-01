@@ -44,28 +44,57 @@ namespace LexiconIMDB.Controllers
 
             return View(nameof(Index), await model.ToListAsync());
         }
-        
+
         [HttpGet]
-        public async Task<IActionResult> Filter2(IndexViewModel viewModel)
+        public async Task<IActionResult> Index2()
         {
-            var movies = string.IsNullOrWhiteSpace(viewModel.Title) ?
-                                                _context.Movie :
-                                                _context.Movie.Where(m => m.Title.StartsWith(viewModel.Title));
-
-            movies = viewModel.Genre is null ?
-                               movies :
-                               movies.Where(m => m.Genre == viewModel.Genre);
-
+            var movies = await _context.Movie.ToListAsync();
 
             var model = new IndexViewModel
             {
-                Movies = await movies.ToListAsync(),
-                Genres = await selectListService.GetGenresAsync()
+                Movies = movies,
+                Genres = GetGenres(movies)
+            };
+
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Filter2(IndexViewModel viewModel)
+        {
+            var query = string.IsNullOrWhiteSpace(viewModel.Title) ?
+                                                _context.Movie :
+                                                _context.Movie.Where(m => m.Title.StartsWith(viewModel.Title));
+
+            query = viewModel.Genre is null ?
+                               query :
+                               query.Where(m => m.Genre == viewModel.Genre);
+
+            var movies = await query.ToListAsync();
+
+            var model = new IndexViewModel
+            {
+                Movies = movies,
+                Genres = GetGenres(movies)  //await selectListService.GetGenresAsync()
             };
 
             return View(nameof(Index2), model);
-        }  
-        
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index3()
+        {
+            var movies = await _context.Movie.ToListAsync();
+
+            var model = new IndexViewModel2
+            {
+                Movies = movies,
+            };
+
+            return View(model);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Filter3(IndexViewModel2 viewModel)
         {
@@ -97,46 +126,6 @@ namespace LexiconIMDB.Controllers
         //                       })
         //                       .ToListAsync();
         //}
-
-
-        [HttpGet]
-        public async Task<IActionResult> Index2()
-        {
-            var movies = await _context.Movie.ToListAsync();
-
-            var model = new IndexViewModel
-            {
-                Movies = movies,
-                Genres = movies.Select(m => m.Genre)
-                               .Distinct()
-                               .Select(g => new SelectListItem
-                               {
-                                   Text = g.ToString(),
-                                   Value = g.ToString()
-                               })
-                               .ToList()
-            };
-
-
-            return View(model);
-        }   
-        
-        
-        [HttpGet]
-        public async Task<IActionResult> Index3()
-        {
-            var movies = await _context.Movie.ToListAsync();
-
-            var model = new IndexViewModel2
-            {
-                Movies = movies,
-            };
-
-            return View(model);
-        } 
-        
-
-
 
         // GET: Movies/Details/5
         [HttpGet]
@@ -271,6 +260,18 @@ namespace LexiconIMDB.Controllers
         private bool MovieExists(int id)
         {
           return (_context.Movie?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private static List<SelectListItem> GetGenres(List<Movie> movies)
+        {
+            return movies.Select(m => m.Genre)
+                                           .Distinct()
+                                           .Select(g => new SelectListItem
+                                           {
+                                               Text = g.ToString(),
+                                               Value = g.ToString()
+                                           })
+                                           .ToList();
         }
     }
 }
