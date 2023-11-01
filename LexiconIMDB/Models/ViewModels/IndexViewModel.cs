@@ -15,6 +15,12 @@ namespace LexiconIMDB.Models.ViewModels
     public class IndexViewModel2
     {
         public IEnumerable<Movie> Movies { get; set; } = new List<Movie>();
+        public FilterParams FilterParams { get; set; } = new FilterParams();
+
+    }
+
+    public class FilterParams
+    {
         public string? Title { get; set; }
         public Genre? Genre { get; set; }
 

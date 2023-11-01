@@ -14,9 +14,9 @@
 
 <form asp-action="Filter3" asp-controller="Movies" method="get">
     <div class="input-group mb-3">
-        <input type="text" class="form-control" asp-for="Title" placeholder="Search on title..." />
+        <input type="text" class="form-control" asp-for="FilterParams.Title" placeholder="Search on title..." />
         <div class="input-group-append">
-            <select class="form-control" asp-for="Genre" asp-items="@service.GetGenres(Model.Movies)">
+            <select class="form-control" asp-for="FilterParams.Title" asp-items="@service.GetGenres(Model.Movies)">
                 <option selected="selected" value="">Please select</option>
             </select>
         </div>

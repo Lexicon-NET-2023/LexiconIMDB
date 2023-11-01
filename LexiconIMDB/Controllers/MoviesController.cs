@@ -98,13 +98,13 @@ namespace LexiconIMDB.Controllers
         [HttpGet]
         public async Task<IActionResult> Filter3(IndexViewModel2 viewModel)
         {
-            var movies = string.IsNullOrWhiteSpace(viewModel.Title) ?
+            var movies = string.IsNullOrWhiteSpace(viewModel.FilterParams.Title) ?
                                                 _context.Movie :
-                                                _context.Movie.Where(m => m.Title.StartsWith(viewModel.Title));
+                                                _context.Movie.Where(m => m.Title.StartsWith(viewModel.FilterParams.Title));
 
-            movies = viewModel.Genre is null ?
+            movies = viewModel.FilterParams.Genre is null ?
                                movies :
-                               movies.Where(m => m.Genre == viewModel.Genre);
+                               movies.Where(m => m.Genre == viewModel.FilterParams.Genre);
 
 
             var model = new IndexViewModel2
